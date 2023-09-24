@@ -79,4 +79,3 @@ PreCSenM <- function(sig.genes, ExprMat){
 # Calculate the CS score
 CS.score = PreCSenM(sig.genes = sig.genes, ExprMat = ExprMat)
 
-
