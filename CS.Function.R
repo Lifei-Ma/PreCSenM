@@ -1,6 +1,6 @@
 
 ######################################################
-#### PreCSenMo (Predictive Cellular Senescence Model)
+#### PreCSenM (Predictive Cellular Senescence Model)
 #### Cellular Senescence score calculation function  
 #### Author: Lifei Ma
 ######################################################
@@ -9,7 +9,7 @@
 #' @author Lifei Ma \email{lifei_ma@@126.com}
 #'
 #' @description
-#' \code{PreCSenMo} Prediction of Cellular Senescence score from gene expression profiling data.
+#' \code{PreCSenM} Prediction of Cellular Senescence score from gene expression profiling data.
 #' \code{sig.genes} Users must load CS significant genes data
 #' 
 #' @details
@@ -29,7 +29,7 @@
 load(file = "sig.genes.Rdata")
 
 # Establish function
-PreCSenMo <- function(sig.genes, ExprMat){
+PreCSenM <- function(sig.genes, ExprMat){
   
   ## Check arguments
   if (missing(ExprMat) || !class(ExprMat) %in% c("matrix", "data.frame") || dim(ExprMat)[2] < 3)
@@ -77,6 +77,6 @@ PreCSenMo <- function(sig.genes, ExprMat){
 
 
 # Calculate the CS score
-CS.score = PreCSenMo(sig.genes = sig.genes, ExprMat = ExprMat)
+CS.score = PreCSenM(sig.genes = sig.genes, ExprMat = ExprMat)
 
 
