@@ -29,53 +29,52 @@
 load(file = "sig.genes.Rdata")
 
 # Establish function
-PreCSenM <- function(sig.genes, ExprMat){
+
+PreCSenM <- function(sig.genes, ExprMat) {
   
   ## Check arguments
-  if (missing(ExprMat) || !class(ExprMat) %in% c("matrix", "data.frame") || dim(ExprMat)[2] < 3)
-    stop("'ExprMat' is missing or incorrect")
+  if (missing(ExprMat) || !is.numeric(as.matrix(ExprMat)) || !class(ExprMat) %in% c("matrix", "data.frame") || dim(ExprMat)[2] < 2) {
+    stop("'ExprMat' is missing, non-numeric, or incorrect format")
+  }
+  
+  if (missing(sig.genes) || !is.data.frame(sig.genes) || !"gene" %in% colnames(sig.genes) || !"Estimate" %in% colnames(sig.genes)) {
+    stop("'sig.genes' is missing or incorrectly formatted")
+  }
   
   # Expression Matrix 
   data = as.data.frame(ExprMat)
   
-  # check genes 
+  # Check genes
   genes = intersect(rownames(data), sig.genes$gene)
-  #length(genes)  # <= 236
-  message("The core CS genes number are: ",length(genes))
+  message("The core CS genes number are: ", length(genes))
   
-  # when CS significant genes > 236*0.75 = 177 
-  if (length(genes) > nrow(sig.genes)*0.75) {
-    
-    # select genes
+  if (length(genes) > nrow(sig.genes) * 0.75) {
     sig.genes = sig.genes[sig.genes$gene %in% genes, ]
+    data.tmp = data[sig.genes$gene, ]
+    data.tmp = data.tmp[order(match(rownames(data.tmp), sig.genes$gene)), ]
+    sig.genes = sig.genes[order(match(sig.genes$gene, rownames(data.tmp))), ]
     
-    # select expression data  
-    data.tmp = data[genes,]
-    table(rownames(data.tmp) == sig.genes$gene)
-    
+    # Calculate score
     score = data.tmp * sig.genes$Estimate
-    #score = na.omit(score)
-    CS.score = t(score)
-    
-    CS.score=data.frame(score=rowSums(CS.score))
-    #CS.score$mean = as.numeric(CS.score$score/nrow(score))
-    CS.score$score.scale = scale(CS.score$score)
-    CS.score$score.01 = (CS.score$score-min(CS.score$score))/(max(CS.score$score)-min(CS.score$score))
-    #CS.score$normalize.oppo = 1-CS.score$normalize 
+    CS.score = data.frame(score = rowSums(t(score)))
+    CS.score$scaled_score = scale(CS.score$score)
+    CS.score$score.01 = (CS.score$score - min(CS.score$score)) / (max(CS.score$score) - min(CS.score$score))
     CS.score$sample = rownames(CS.score)
     
     message("----------------------\nCalculation is done!")
-    
     return(CS.score)
-    
+  } else {
+    stop("Error: Too few genes! Calculation stopped.", call. = FALSE)
   }
-  else {
-    warning("Error: Too few genes!\n----------------------\nError: Calculation Stopped!!",call. = FALSE)
-  }
-  
 }
 
-
 # Calculate the CS score
-CS.score = PreCSenM(sig.genes = sig.genes, ExprMat = ExprMat)
+#CS.score = PreCSenM(sig.genes = sig.genes, ExprMat = ExprMat)
+
+
+
+
+
+
+
 
